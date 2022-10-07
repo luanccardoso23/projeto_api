@@ -3,9 +3,17 @@ namespace App\controller;// utilizando namespace para identificar nossa classe
 use App\model\ProdutoDAO;
 
 class ProdutoController{
-    public function get(){
+    public function get($id = null){
         $meuProduto = new ProdutoDAO();
-        return $meuProduto->consultar();
+        if($id){
+            return $meuProduto->consultarUnico($id);
+
+        }
+        else{
+            return $meuProduto->consultar();
+        }
+       
+        
     }
     public function post(){
        $meuProduto = new ProdutoDAO();
@@ -13,10 +21,13 @@ class ProdutoController{
       // var_dump($_POST);
     }
     public function put($id){
-       return "estou no método put";
+       $meuProduto = new ProdutoDAO();
+       $dados = json_decode(file_get_contents('php://input'),true);// file_get_contents é utilizado para pegar dados de algum lugar específico
+       return $meuProduto->atualizar($id, $dados);
     }
     public function delete($id){
-        return "Estou no método delete";
+        $meuProduto = new ProdutoDAO();
+        return $meuProduto->deletar($id);
     }
 
 }

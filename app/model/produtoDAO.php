@@ -22,6 +22,22 @@ class ProdutoDAO{
 
         }
     }
+    public function consultarUnico($id){
+        $comando = "SELECT * FROM {$this->tabela} WHERE cod_produto = :id";
+        
+        $preparacao = Conexao::getConexao()->prepare($comando);
+        $preparacao->bindValue(":id", $id);
+        $preparacao->execute();
+
+        if($preparacao->rowCount() > 0){
+            return $preparacao->fetchALL(\PDO::FETCH_ASSOC);
+
+        }
+        else{
+            throw new \Exception("Nenhum dado encontrado, o banco de dados está vazio");// estamos lançando um erro para ser tratado pelo catch
+
+        }
+    }
     public function inserir($dados){
         $comando = "INSERT INTO {$this->tabela} VALUES(NULL, :nome, :preco, :info)";
 
@@ -39,6 +55,51 @@ class ProdutoDAO{
         }
         else{
             throw new \Exeception("Erro ao cadastrar as informações");
+        }
+
+    }
+    public function atualizar($id, $dados){
+        $comando = "UPDATE ($this->tabela) SET nome = :nome_produto, preco = :preco_produto, info_produto = :info WHERE cod_produto = :id";
+
+        $preparacao = Conexao::getConexao()->prepare($comando);
+
+        list($nome, $preco, $info) = array_values($dados);
+        
+        
+        $preparacao->bindValue(':nome_produto', $nome);
+        $preparacao->bindValue(':preco_produto', $preco);
+        $preparacao->bindValue(':info', $info);
+        $preparacao->bindValue(':id', $id);
+
+        $preparacao->execute();
+        if($preparacao->rowCount() > 0){
+            return "Dados atualizados com sucesso";
+
+        }
+        else{
+            throw new \Exception("Erro ao tentar atualizar os dados");
+
+        }
+        
+
+
+    }
+    public function deletar($id){
+        $comando = "DELETE FROM {$this->tabela} WHERE cod_produto =  :id";
+
+        $preparacao = Conexao::getConexao()->prepare($comando);
+        
+
+        $preparacao->bindValue(":id", $id);
+
+        $preparacao->execute();
+
+        if($preparacao->rowCount() > 0){
+            return "Dados excluidos com sucesso";
+
+        }
+        else{
+            throw new \Exception("Erro ao tentar excluir os dados");
         }
 
     }
